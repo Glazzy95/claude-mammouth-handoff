@@ -1,0 +1,15 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": ["{{AGENTS_PATH}}"],
+  "provider": {
+    "mammouth": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Mammouth",
+      "options": {
+        "baseURL": "https://api.mammouth.ai/v1",
+        "apiKey": "{env:MAMMOUTH_API_KEY}"
+      },
+      "models": {}
+    }
+  }
+}
