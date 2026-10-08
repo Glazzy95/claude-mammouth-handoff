@@ -13,13 +13,16 @@ continues from there.
                                     ▼                ▼
                           <workspace>\HANDOFF.md  "Written by: …"
                                     │                │
- Claude Code reads it ◄─ CLAUDE.md ─┘                └─ AGENTS.md ─► OpenCode reads it
+ Claude Code gets it ◄─ SessionStart┘                └─ AGENTS.md ─► OpenCode reads it
+                        hook (if written by Mammouth)
 ```
 
 - **No tokens spent on bookkeeping.** The handoff is built locally from the session transcript and
   history, not written by the model.
 - **Works when Claude is cut off.** The `StopFailure` hook also fires when a reply is interrupted by a
   usage limit.
+- **Claude can't miss Mammouth's work.** When a Claude Code session starts or resumes (CLI, VS Code or
+  desktop app) and the last handoff came from Mammouth, a `SessionStart` hook injects it into Claude's context.
 - **Optional guard.** It blocks Claude Code from reading or changing anything outside the workspace folder.
 
 > Windows only (PowerShell 5.1+). Tested with Claude Code and OpenCode 1.18.
@@ -36,6 +39,7 @@ MyWorkspace\
 ├─ some-project\
 └─ handoff\              ← this repository
    ├─ handoff.ps1        Claude Code Stop/StopFailure hook → HANDOFF.md
+   ├─ session-start.ps1  Claude Code SessionStart hook: feeds Mammouth's handoff to Claude
    ├─ guard.ps1          optional PreToolUse hook: stay inside the workspace
    ├─ install-claude-hooks.ps1
    ├─ mammouth-setup.ps1 key, model list, OpenCode config
@@ -65,19 +69,13 @@ powershell -ExecutionPolicy Bypass -File .\handoff\install-claude-hooks.ps1
 powershell -ExecutionPolicy Bypass -File .\handoff\mammouth-setup.ps1
 ```
 
-Then add this to `MyWorkspace\CLAUDE.md`, so Claude picks up what Mammouth did:
-
-```markdown
-- At the start of a session, read `HANDOFF.md` in this folder before replying. If it says
-  "Written by: Mammouth", continue from Mammouth's state.
-```
-
 Restart Claude Code and open a **new** terminal, so the hooks and environment variables load.
 
 ## Usage
 
 - **Claude runs out of tokens:** run `handoff\mammouth.cmd` and say *"continue"*.
-- **Back to Claude:** just keep going. Claude reads `HANDOFF.md` first.
+- **Back to Claude:** start or resume a session in the workspace. Claude receives Mammouth's handoff
+  automatically and says that it picked up Mammouth's work.
 - Switch models in OpenCode with `/models`. Re-run `mammouth-setup.ps1` to refresh the list.
 
 `mammouth-setup.ps1` sets three user environment variables: `MAMMOUTH_API_KEY`, `OPENCODE_CONFIG` and
@@ -98,7 +96,7 @@ Restart Claude Code and open a **new** terminal, so the hooks and environment va
 
 ## Uninstall
 
-Remove the `handoff.ps1` / `guard.ps1` entries from `~/.claude/settings.json` (a backup is in
+Remove the `handoff.ps1` / `session-start.ps1` / `guard.ps1` entries from `~/.claude/settings.json` (a backup is in
 `settings.json.bak`). Delete the environment variables `OPENCODE_CONFIG`, `OPENCODE_CONFIG_DIR` and
 `MAMMOUTH_API_KEY`. Then delete this folder.
 

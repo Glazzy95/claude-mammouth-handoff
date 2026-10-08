@@ -29,7 +29,7 @@ function New-HookEntry([string]$script, [bool]$async, [string]$matcher) {
 function Set-HookEvent($hooks, [string]$eventName, $entry) {
     $kept = @()
     if ($hooks.PSObject.Properties[$eventName]) {
-        $kept = @($hooks.$eventName | Where-Object { -not ($_.hooks | Where-Object { $_.command -match 'handoff\.ps1|guard\.ps1' }) })
+        $kept = @($hooks.$eventName | Where-Object { -not ($_.hooks | Where-Object { $_.command -match 'handoff\.ps1|guard\.ps1|session-start\.ps1' }) })
     }
     $value = @($kept)
     if ($entry) { $value += $entry }
@@ -48,6 +48,7 @@ if (-not $settings.PSObject.Properties['hooks']) { $settings | Add-Member -NoteP
 
 Set-HookEvent $settings.hooks 'Stop' (New-HookEntry 'handoff.ps1' $true $null)
 Set-HookEvent $settings.hooks 'StopFailure' (New-HookEntry 'handoff.ps1' $true $null)
+Set-HookEvent $settings.hooks 'SessionStart' (New-HookEntry 'session-start.ps1' $false $null)
 $guardEntry = if ($Guard) { New-HookEntry 'guard.ps1' $false 'Read|Edit|Write|NotebookEdit|Glob|Grep|Bash|PowerShell' } else { $null }
 Set-HookEvent $settings.hooks 'PreToolUse' $guardEntry
 
