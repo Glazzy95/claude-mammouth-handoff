@@ -53,7 +53,7 @@ Mammouth app subscription.
 
 ```powershell
 cd C:\path\to\MyWorkspace
-git clone https://github.com/<you>/claude-mammouth-handoff.git handoff
+git clone https://github.com/Glazzy95/claude-mammouth-handoff.git handoff
 
 # 1. OpenCode
 npm i -g opencode-ai
