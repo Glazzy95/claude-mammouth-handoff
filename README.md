@@ -1,5 +1,18 @@
 # Claude Code ⇄ Mammouth handoff
 
+> [!WARNING]
+> **Hobby project. Read this before installing.**
+> - **Unofficial.** Not affiliated with or endorsed by Anthropic, Mammouth or OpenCode.
+> - **Barely tested.** It has run on one Windows PC with OpenCode 1.18. Other setups may break, and later
+>   OpenCode versions may change the plugin API. No support is promised.
+> - **The guard is not a security boundary.** It only checks Claude Code's tool calls, and shell commands
+>   only heuristically, so it can be bypassed. OpenCode is not restricted by it at all.
+> - **Your conversation leaves your PC.** `HANDOFF.md` contains chat text, paths and possibly file contents
+>   or anything you pasted, including secrets. In Mammouth sessions this goes to Mammouth and the model
+>   provider behind it. Don't use it with code or data you're not allowed to share, such as an employer's.
+> - **It changes your setup.** The installer edits `~/.claude/settings.json` (a backup is made), and the
+>   setup script stores your API key in a Windows user environment variable. See [Uninstall](#uninstall).
+
 Keep working when Claude Code runs out of tokens. This switches you to
 [OpenCode](https://opencode.ai) running on a [Mammouth](https://mammouth.ai) API key, and back again,
 without losing track of the task.
@@ -23,7 +36,8 @@ continues from there.
   usage limit.
 - **Claude can't miss Mammouth's work.** When a Claude Code session starts or resumes (CLI, VS Code or
   desktop app) and the last handoff came from Mammouth, a `SessionStart` hook injects it into Claude's context.
-- **Optional guard.** It blocks Claude Code from reading or changing anything outside the workspace folder.
+- **Optional guard.** It tries to stop Claude Code from reading or changing files outside the workspace
+  folder. It's a safety net against mistakes, not protection against a determined bypass (see the warning above).
 
 > Windows only (PowerShell 5.1+). Tested with Claude Code and OpenCode 1.18.
 
